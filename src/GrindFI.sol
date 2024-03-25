@@ -46,7 +46,7 @@ contract GrindFI is ReentrancyGuard {
         seller = msg.sender;
         productDetail.service = serviceName;
         productDetail.price = price * 10**18;
-        productDetail.duration = duration;
+        productDetail.duration = block.timestamp + (duration * 1 days);
     }
 
     modifier onlyBuyer(address supposedBuyer) {
