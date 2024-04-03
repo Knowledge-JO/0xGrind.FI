@@ -3,15 +3,15 @@ pragma solidity ^0.8.13;
 
 // make struct object universal
 import {Product} from "./Product.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 error GrindFI__OnlyBuyerAllowed();
 error GrindFI__OnlySellerAllowed();
 error GrindFI__SendRequiredPrice(uint256 price);
-error GrindFI__StateError(string reason, GrindFI.State currentState);
+error GrindFI__StateError(string reason, Product.State currentState);
 error GrindFI__TransferError(string reason);
 
-contract GrindFI is ReentrancyGuard {
+contract GrindFI is ReentrancyGuard, Product {
     // Sellers can create, update and delete service ads.
     // Buyers can view this ads and the price attached to this ads
     // Buyers can create, update and delete job offers.
@@ -27,26 +27,16 @@ contract GrindFI is ReentrancyGuard {
     event RaiseDispute(State currentState, address buyer);
 
     mapping (address => Buyer) private buyerToBuyerInfo;
-
-    enum State{AWAITING_BUYER_STARTS_TRANSACTION, AWAITING_DELIVERY, CANCELED, AWAITING_PAYMENT_RELEASE, TRANSACTION_COMPLETE}
     
     address private seller;
 
     Product.ProductDetail private productDetail;
 
-    struct Buyer {
-        address buyerAdress;
-        uint256 pricePaid;
-        uint256 availableForWithdrawal;
-        uint256 startTime;
-        State state;
-    }
-
     constructor (string memory serviceName, uint256 price, uint256 duration) {
         seller = msg.sender;
         productDetail.service = serviceName;
-        productDetail.price = price * 10**18;
-        productDetail.duration = block.timestamp + (duration * 1 days);
+        productDetail.price = price;
+        productDetail.duration = block.timestamp  + (duration * 1 days);
     }
 
     modifier onlyBuyer(address supposedBuyer) {
@@ -79,7 +69,7 @@ contract GrindFI is ReentrancyGuard {
            revert GrindFI__StateError("You've started the transaction", state);
         }
         
-        if(msg.value != productDetail.price){
+        if(msg.value < productDetail.price){
             revert GrindFI__SendRequiredPrice(productDetail.price);
         }
 
@@ -106,14 +96,16 @@ contract GrindFI is ReentrancyGuard {
     // only buyer can cancel the transaction.
     function cancelTransaction() external nonReentrant onlyBuyer(msg.sender) {
         State state = getContractState(msg.sender);
+        uint256 pricePaid =  buyerToBuyerInfo[msg.sender].pricePaid;
         if(state != State.AWAITING_DELIVERY) {
-            revert GrindFI__StateError("Cannot call this function in this current state", state);
+            revert GrindFI__StateError("Cannot call this cancelTransaction() in this current state", state);
         }
         if(address(this).balance == 0) {
             revert GrindFI__TransferError("No funds to be withdrawn");
         }
         
-        withdraw(msg.sender, msg.sender);
+        (bool success, ) = (msg.sender).call{value: pricePaid}("");
+        if( !success) revert GrindFI__TransferError("Transfer failed");
         updateState(msg.sender, State.CANCELED);
 
         emit CancelTransaction(getContractState(msg.sender), msg.sender);
@@ -126,6 +118,7 @@ contract GrindFI is ReentrancyGuard {
             revert GrindFI__StateError("Cannot call this function in this current state, Service has been marked as delivered", state);
         }
         updateState(_buyer, State.AWAITING_PAYMENT_RELEASE);
+        buyerToBuyerInfo[_buyer].productDelivered = true;
         emit DeliverProduct(getContractState(_buyer), _buyer);
     }
 
@@ -151,16 +144,17 @@ contract GrindFI is ReentrancyGuard {
         if(state != State.AWAITING_PAYMENT_RELEASE) {
             revert GrindFI__StateError("Cannot call this function in this current state", state); 
         }
-        updateState(msg.sender, State.AWAITING_DELIVERY);
+        updateState(msg.sender, State.DISPUTE_RAISED);
+        buyerToBuyerInfo[msg.sender].productDelivered = false;
         emit RaiseDispute(getContractState(msg.sender), msg.sender);
     }
 
 
-    function withdraw(address _buyer, address receiver) private {
+    function withdraw(address _buyer, address receiver) internal {
         State state = getContractState(_buyer);
         uint256 pricePaid =  buyerToBuyerInfo[_buyer].pricePaid;
         if(state != State.AWAITING_PAYMENT_RELEASE) {
-            revert GrindFI__StateError("Cannot call this function in this current state", state);
+            revert GrindFI__StateError("Cannot call withdraw() in this current state", state);
         }
         (bool success, ) = (receiver).call{value: pricePaid}("");
         if( !success) revert GrindFI__TransferError("Transfer failed");
