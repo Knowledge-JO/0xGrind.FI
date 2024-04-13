@@ -2,11 +2,11 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import {GrindFI, GrindFI__OnlyBuyerAllowed,GrindFI__SendRequiredPrice} from "../src/GrindFI.sol";
+import {GrindFIBase, GrindFI__OnlyBuyerAllowed,GrindFI__SendRequiredPrice} from "../src/GrindFIBase.sol";
 import {Product} from "../src/Product.sol";
 import "../lib/forge-std/src/console.sol";
 contract GrindFITest is Test, Product {
-    GrindFI grindFI;
+    GrindFIBase grindFI;
 
     string private service = "Smart Contract Developer";
     uint256 price = 0.3 ether;
@@ -17,7 +17,7 @@ contract GrindFITest is Test, Product {
 
     function setUp() external {
         correctDuration = (duration * 1 days) + block.timestamp;
-        grindFI = new GrindFI(service, price, duration);
+        grindFI = new GrindFIBase(service, price, duration);
     }
 
     function test_specifiedServiceInConstructor() external view {

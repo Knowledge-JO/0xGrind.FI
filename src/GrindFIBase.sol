@@ -10,9 +10,8 @@ error GrindFI__OnlySellerAllowed();
 error GrindFI__SendRequiredPrice(uint256 price);
 error GrindFI__StateError(string reason, Product.State currentState);
 error GrindFI__TransferError(string reason);
-error GrindFI__OnlyFactoryAllowed();
 
-contract GrindFI is ReentrancyGuard, Product {
+contract GrindFIBase is ReentrancyGuard, Product {
     // Sellers can create, update and delete service ads.
     // Buyers can view this ads and the price attached to this ads
     // Buyers can create, update and delete job offers.
@@ -31,36 +30,25 @@ contract GrindFI is ReentrancyGuard, Product {
     
     address private seller;
 
-    ProductDetail private productDetail;
-    address private GFIFactoryAddress;
+    Product.ProductDetail private productDetail;
 
-    constructor (string memory serviceName, uint256 price, uint256 duration, address _seller, address _GFIFactoryAddress) {
-        seller = _seller;
+    constructor (string memory serviceName, uint256 price, uint256 duration) {
+        seller = msg.sender;
         productDetail.service = serviceName;
         productDetail.price = price;
         productDetail.duration = block.timestamp  + (duration * 1 days);
-        GFIFactoryAddress = _GFIFactoryAddress;
-
     }
 
     modifier onlyBuyer(address supposedBuyer) {
-        if(supposedBuyer != buyerToBuyerInfo[supposedBuyer].buyerAdress){
+        if(msg.sender != buyerToBuyerInfo[supposedBuyer].buyerAdress){
             revert GrindFI__OnlyBuyerAllowed();
         }
         _;
     }
 
-    modifier onlySeller(address supposedSeller) {
-        if(supposedSeller != seller){
+    modifier onlySeller {
+        if(msg.sender != seller){
             revert GrindFI__OnlySellerAllowed();
-        }
-        _;
-    }
-
-
-    modifier onlyFactory {
-        if(msg.sender != GFIFactoryAddress) {
-            revert GrindFI__OnlyFactoryAllowed();
         }
         _;
     }
@@ -71,10 +59,10 @@ contract GrindFI is ReentrancyGuard, Product {
     // only buyer can call this function to start a transaction
     // the buyer sends the required amount to the contract
     // the duration for the delivery starts when this function is called
-    function startTransaction (address _buyer) onlyFactory public payable {
-        State state = getContractState(_buyer);
+    function startTransaction () public payable {
+        State state = getContractState(msg.sender);
         // make sure buyer can only send funds when the state is AWAITING_BUYER_STARTS_TRANSACTION
-        if(_buyer == seller){
+        if(msg.sender == seller){
             revert GrindFI__OnlyBuyerAllowed();
         }
         if( state != State.AWAITING_BUYER_STARTS_TRANSACTION) {
@@ -86,14 +74,14 @@ contract GrindFI is ReentrancyGuard, Product {
         }
 
         // clock has started ticking :)
-        initializeBuyer(_buyer, msg.value, block.timestamp, State.AWAITING_DELIVERY);
-        buyerToBuyerInfo[_buyer].availableForWithdrawal = msg.value;
+        initializeBuyer(msg.sender, msg.value, block.timestamp, State.AWAITING_DELIVERY);
+        buyerToBuyerInfo[msg.sender].availableForWithdrawal = msg.value;
 
-        emit StartTransaction(getContractState(_buyer),_buyer, msg.value);
+        emit StartTransaction(getContractState(msg.sender), msg.sender, msg.value);
     }
 
 
-    function initializeBuyer (address _buyer, uint256 _price, uint256 _startTime, State _state) internal {
+    function initializeBuyer (address _buyer, uint256 _price, uint256 _startTime, State _state) private {
         buyerToBuyerInfo[_buyer].buyerAdress = _buyer;
         buyerToBuyerInfo[_buyer].pricePaid = _price;
         buyerToBuyerInfo[_buyer].startTime = _startTime; 
@@ -101,14 +89,14 @@ contract GrindFI is ReentrancyGuard, Product {
     }
 
 
-    function updateState(address _buyer, State _state) internal {
+    function updateState(address _buyer, State _state) private {
         buyerToBuyerInfo[_buyer].state = _state;
     }
 
     // only buyer can cancel the transaction.
-    function cancelTransaction(address _buyer) external onlyFactory nonReentrant onlyBuyer(_buyer) {
-        State state = getContractState(_buyer);
-        uint256 pricePaid =  buyerToBuyerInfo[_buyer].pricePaid;
+    function cancelTransaction() external nonReentrant onlyBuyer(msg.sender) {
+        State state = getContractState(msg.sender);
+        uint256 pricePaid =  buyerToBuyerInfo[msg.sender].pricePaid;
         if(state != State.AWAITING_DELIVERY) {
             revert GrindFI__StateError("Cannot call this cancelTransaction() in this current state", state);
         }
@@ -116,15 +104,15 @@ contract GrindFI is ReentrancyGuard, Product {
             revert GrindFI__TransferError("No funds to be withdrawn");
         }
         
-        (bool success, ) = (_buyer).call{value: pricePaid}("");
+        (bool success, ) = (msg.sender).call{value: pricePaid}("");
         if( !success) revert GrindFI__TransferError("Transfer failed");
-        updateState(_buyer, State.CANCELED);
+        updateState(msg.sender, State.CANCELED);
 
-        emit CancelTransaction(getContractState(_buyer), _buyer);
+        emit CancelTransaction(getContractState(msg.sender), msg.sender);
     } 
 
     // This function updates the state of the contract to indicate product has been delivered
-    function deliverProduct(address _seller, address _buyer) public onlyFactory onlySeller(_seller) {
+    function deliverProduct(address _buyer) public onlySeller {
         State state = getContractState(_buyer);
         if(state != State.AWAITING_DELIVERY) {
             revert GrindFI__StateError("Cannot call this function in this current state, Service has been marked as delivered", state);
@@ -137,28 +125,28 @@ contract GrindFI is ReentrancyGuard, Product {
     // This function updates the state of the contract to indicate product has been received
     // this function will call a private function releasing the funds to the seller
     // This shows the buyer is ok with the delivered product
-    function productAccepted(address _buyer) external onlyFactory nonReentrant onlyBuyer(_buyer) {
-        State state = getContractState(_buyer);
+    function productAccepted() external nonReentrant onlyBuyer(msg.sender) {
+        State state = getContractState(msg.sender);
         if(state != State.AWAITING_PAYMENT_RELEASE) {
             revert GrindFI__StateError("Cannot call this function in this current state", state);
         }
 
-        withdraw(_buyer, seller);
-        updateState(_buyer, State.TRANSACTION_COMPLETE);
-        emit ProductAccepted(getContractState(_buyer), _buyer);
+        withdraw(msg.sender, seller);
+        updateState(msg.sender, State.TRANSACTION_COMPLETE);
+        emit ProductAccepted(getContractState(msg.sender), msg.sender);
     }
 
 
     // A dispute can be raised if the buyer thinks the product delivered does not meet expectation
     // return state back t awaiting delivery to enable seller deliver updated product again
-    function raiseDispute(address _buyer) public onlyFactory onlyBuyer(_buyer) {
-        State state = getContractState(_buyer);
+    function raiseDispute() public onlyBuyer(msg.sender) {
+        State state = getContractState(msg.sender);
         if(state != State.AWAITING_PAYMENT_RELEASE) {
             revert GrindFI__StateError("Cannot call this function in this current state", state); 
         }
-        updateState(_buyer, State.DISPUTE_RAISED);
-        buyerToBuyerInfo[_buyer].productDelivered = false;
-        emit RaiseDispute(getContractState(_buyer), _buyer);
+        updateState(msg.sender, State.DISPUTE_RAISED);
+        buyerToBuyerInfo[msg.sender].productDelivered = false;
+        emit RaiseDispute(getContractState(msg.sender), msg.sender);
     }
 
 
@@ -179,7 +167,7 @@ contract GrindFI is ReentrancyGuard, Product {
         return buyerToBuyerInfo[_buyerAddress].state;
     }
 
-    function getStartTime(address _buyerAddress) public view returns (uint256) {
+    function getStateTime(address _buyerAddress) public view returns (uint256) {
        return buyerToBuyerInfo[_buyerAddress].startTime;
     }
 
@@ -191,7 +179,7 @@ contract GrindFI is ReentrancyGuard, Product {
         return seller;
     }
 
-    function getProductDetails() public view returns (ProductDetail memory) {
+    function getProductDetails() public view returns (Product.ProductDetail memory) {
         return productDetail;
     }
 }
