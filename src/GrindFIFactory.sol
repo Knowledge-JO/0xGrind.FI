@@ -6,7 +6,7 @@ import {Product} from "./Product.sol";
 import {GrindFI} from "./GrindFI.sol";
 
 
-contract GrinfFIFactory is Product {
+contract GrindFIFactory is Product {
     // create new GrindFI contracts
     
     mapping (address => GrindFI[]) private sellerToContractCreated;
@@ -22,9 +22,9 @@ contract GrinfFIFactory is Product {
         sellerToContractCreated[msg.sender].push(grindFI);
     }
 
-    function GFIStartTransaction(uint256 index, address seller) public {
+    function GFIStartTransaction(uint256 index, address seller) public payable {
         GrindFI grindFI = getGrandFIContract(index, seller);
-        grindFI.startTransaction(msg.sender);
+        grindFI.startTransaction{value: msg.value}(msg.sender);
     }
 
     // only buyer
