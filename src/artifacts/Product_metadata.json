@@ -1,0 +1,47 @@
+{
+	"compiler": {
+		"version": "0.8.25+commit.b61c2a91"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/Product.sol": "Product"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": [
+			":openzeppelin/contracts=lib/openzeppelin-contracts/contracts/"
+		]
+	},
+	"sources": {
+		"src/Product.sol": {
+			"keccak256": "0x75d42ffc4327cb49863aacc9b416e663022744c2b4ae6f54b77840ea524b37bb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2357530e98eb6630abd57e0439ef2d51479cd0dd0479a49bbde5ed568946327f",
+				"dweb:/ipfs/Qmd8KmzkXTgJJx32ZqwRaXYz88eHZt111rHqALXxLhjoXu"
+			]
+		}
+	},
+	"version": 1
+}

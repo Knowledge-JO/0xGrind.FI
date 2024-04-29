@@ -1,0 +1,417 @@
+{
+	"compiler": {
+		"version": "0.8.25+commit.b61c2a91"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					}
+				],
+				"name": "GFICancelTransaction",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					}
+				],
+				"name": "GFIDeliverProduct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_buyerAddress",
+						"type": "address"
+					}
+				],
+				"name": "GFIGetBuyerInfo",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "buyerAdress",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "pricePaid",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "availableForWithdrawal",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "startTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "enum Product.State",
+								"name": "state",
+								"type": "uint8"
+							},
+							{
+								"internalType": "bool",
+								"name": "productDelivered",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct Product.Buyer",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_buyerAddress",
+						"type": "address"
+					}
+				],
+				"name": "GFIGetContractState",
+				"outputs": [
+					{
+						"internalType": "enum Product.State",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					}
+				],
+				"name": "GFIGetProductDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "service",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "price",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "duration",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Product.ProductDetail",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					}
+				],
+				"name": "GFIGetSeller",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_buyerAddress",
+						"type": "address"
+					}
+				],
+				"name": "GFIGetStartTime",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					}
+				],
+				"name": "GFIProductAccepted",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					}
+				],
+				"name": "GFIRaiseDispute",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					}
+				],
+				"name": "GFIStartTransaction",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "serviceName",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "duration",
+						"type": "uint256"
+					}
+				],
+				"name": "createSellerAd",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_sellerAddress",
+						"type": "address"
+					}
+				],
+				"name": "getAllAds",
+				"outputs": [
+					{
+						"internalType": "contract GrindFI[]",
+						"name": "",
+						"type": "address[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					}
+				],
+				"name": "getGrandFIContract",
+				"outputs": [
+					{
+						"internalType": "contract GrindFI",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/GrindFIFactory.sol": "GrindFIFactory"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": [
+			":openzeppelin/contracts=lib/openzeppelin-contracts/contracts/"
+		]
+	},
+	"sources": {
+		"lib/openzeppelin-contracts/contracts//utils/ReentrancyGuard.sol": {
+			"keccak256": "0xf980daa263b661ab8ddee7d4fd833c7da7e7995e2c359ff1f17e67e4112f2236",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7448ab095d6940130bcf76ba47a2eab14148c83119523b93dd89f6d84edd6c02",
+				"dweb:/ipfs/QmawrZ4voKQjH3oomXT3Kuheb3Mnmo2VvVpxg8Ne5UJUrd"
+			]
+		},
+		"src/GrindFI.sol": {
+			"keccak256": "0xde1dc7c1f44101ab9ed378ddb22200b807556799b4d92200c71b0f5a551831cb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b24ee68fe56f9b46a98bee8a2552e2b6b2103425debd6981b3a8bd5c92e1bcb3",
+				"dweb:/ipfs/QmQMPUi23xfRMpYzHxsKW8gczVTbjhPJHYppQyFq2fffBY"
+			]
+		},
+		"src/GrindFIFactory.sol": {
+			"keccak256": "0x7c68b3fc06b1840b6b90419ce932a1762e665eec6759e57e8c815d10347326f7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f483ef8cd4034f11ea9670c9271026bf685049165d6ba0ee484cc5d80c22545c",
+				"dweb:/ipfs/QmfXzvsiNrNvDBuRGjcg4bCvNZyqZ5B9F1268P7oRSjkyQ"
+			]
+		},
+		"src/Product.sol": {
+			"keccak256": "0x75d42ffc4327cb49863aacc9b416e663022744c2b4ae6f54b77840ea524b37bb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2357530e98eb6630abd57e0439ef2d51479cd0dd0479a49bbde5ed568946327f",
+				"dweb:/ipfs/Qmd8KmzkXTgJJx32ZqwRaXYz88eHZt111rHqALXxLhjoXu"
+			]
+		}
+	},
+	"version": 1
+}

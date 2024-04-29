@@ -1,0 +1,419 @@
+{
+	"compiler": {
+		"version": "0.8.25+commit.b61c2a91"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "serviceName",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "duration",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "GrindFI__OnlyBuyerAllowed",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "GrindFI__OnlySellerAllowed",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "GrindFI__SendRequiredPrice",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "reason",
+						"type": "string"
+					},
+					{
+						"internalType": "enum Product.State",
+						"name": "currentState",
+						"type": "uint8"
+					}
+				],
+				"name": "GrindFI__StateError",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "reason",
+						"type": "string"
+					}
+				],
+				"name": "GrindFI__TransferError",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ReentrancyGuardReentrantCall",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "enum Product.State",
+						"name": "currentState",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					}
+				],
+				"name": "CancelTransaction",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "enum Product.State",
+						"name": "currentState",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					}
+				],
+				"name": "DeliverProduct",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "enum Product.State",
+						"name": "currentState",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					}
+				],
+				"name": "ProductAccepted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "enum Product.State",
+						"name": "currentState",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					}
+				],
+				"name": "RaiseDispute",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "enum Product.State",
+						"name": "currentState",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "StartTransaction",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "cancelTransaction",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_buyer",
+						"type": "address"
+					}
+				],
+				"name": "deliverProduct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_buyerAddress",
+						"type": "address"
+					}
+				],
+				"name": "getBuyerInfo",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "buyerAdress",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "pricePaid",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "availableForWithdrawal",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "startTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "enum Product.State",
+								"name": "state",
+								"type": "uint8"
+							},
+							{
+								"internalType": "bool",
+								"name": "productDelivered",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct Product.Buyer",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_buyerAddress",
+						"type": "address"
+					}
+				],
+				"name": "getContractState",
+				"outputs": [
+					{
+						"internalType": "enum Product.State",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getProductDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "service",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "price",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "duration",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Product.ProductDetail",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getSeller",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_buyerAddress",
+						"type": "address"
+					}
+				],
+				"name": "getStateTime",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "productAccepted",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "raiseDispute",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "startTransaction",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"errors": {
+				"ReentrancyGuardReentrantCall()": [
+					{
+						"details": "Unauthorized reentrant call."
+					}
+				]
+			},
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/GrindFIBase.sol": "GrindFIBase"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": [
+			":openzeppelin/contracts=lib/openzeppelin-contracts/contracts/"
+		]
+	},
+	"sources": {
+		"lib/openzeppelin-contracts/contracts//utils/ReentrancyGuard.sol": {
+			"keccak256": "0xf980daa263b661ab8ddee7d4fd833c7da7e7995e2c359ff1f17e67e4112f2236",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7448ab095d6940130bcf76ba47a2eab14148c83119523b93dd89f6d84edd6c02",
+				"dweb:/ipfs/QmawrZ4voKQjH3oomXT3Kuheb3Mnmo2VvVpxg8Ne5UJUrd"
+			]
+		},
+		"src/GrindFIBase.sol": {
+			"keccak256": "0x45e46116db1d25a4861abecdb9f31eef21e73cb86030c839d765d06e4ef80551",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://da675d971d95944dba6acde21d434e4e59416f7843a8feef605337ca0bb4fed8",
+				"dweb:/ipfs/QmWupDyfh17a4ivKT3PRdn8eHLfFb318cKj3dxB7q2FefJ"
+			]
+		},
+		"src/Product.sol": {
+			"keccak256": "0x75d42ffc4327cb49863aacc9b416e663022744c2b4ae6f54b77840ea524b37bb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2357530e98eb6630abd57e0439ef2d51479cd0dd0479a49bbde5ed568946327f",
+				"dweb:/ipfs/Qmd8KmzkXTgJJx32ZqwRaXYz88eHZt111rHqALXxLhjoXu"
+			]
+		}
+	},
+	"version": 1
+}
